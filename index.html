@@ -2,147 +2,525 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>预约我的空闲时间</title>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --primary: #FF6B6B;
+            --primary-soft: #FF8E8E;
             --secondary: #4ECDC4;
+            --secondary-soft: #7EDDD6;
             --accent: #FFE66D;
             --dark: #2C3E50;
-            --light: #ECF0F1;
-            --gradient: linear-gradient(135deg, #FF6B6B 0%, #4ECDC4 100%);
+            --dark-soft: #34495E;
+            --light: #F0F3F5;
+            --card: #FFFFFF;
+            --gradient: linear-gradient(135deg, #FF6B6B 0%, #ee5a6f 30%, #c9628b 60%, #4ECDC4 100%);
+            --gradient-btn: linear-gradient(135deg, #FF6B6B, #ee5a6f);
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Noto Sans SC', sans-serif; min-height: 100vh; background: var(--light); overflow-x: hidden; }
-        .container { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; background: var(--gradient); position: relative; }
-        .container::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E"); opacity: 0.5; }
-        .card { background: white; border-radius: 24px; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15); padding: 40px; max-width: 400px; width: 100%; position: relative; z-index: 1; animation: slideUp 0.6s ease-out; }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
-        .title { font-family: 'Playfair Display', serif; font-size: 28px; color: var(--dark); text-align: center; margin-bottom: 30px; line-height: 1.4; }
-        .question { font-size: 18px; color: var(--dark); text-align: center; margin-bottom: 30px; font-weight: 500; }
-        .buttons { display: flex; gap: 15px; justify-content: center; margin-bottom: 20px; position: relative; height: 100px; }
-        .btn { padding: 14px 32px; border: none; border-radius: 50px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; font-family: 'Noto Sans SC', sans-serif; }
-        .btn-yes { background: var(--primary); color: white; box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4); }
-        .btn-yes:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(255, 107, 107, 0.5); }
-        .btn-no { background: var(--dark); color: white; position: absolute; transition: all 0.1s ease; }
-        .form { display: none; }
-        .form.active { display: block; animation: fadeIn 0.5s ease; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        .form-group { margin-bottom: 20px; }
-        .form-group label { display: block; font-size: 14px; color: var(--dark); margin-bottom: 8px; font-weight: 500; }
-        .form-group input, .form-group select { width: 100%; padding: 14px 16px; border: 2px solid var(--light); border-radius: 12px; font-size: 16px; transition: border-color 0.3s ease; font-family: 'Noto Sans SC', sans-serif; }
-        .form-group input:focus, .form-group select:focus { outline: none; border-color: var(--secondary); }
-        .submit-btn { width: 100%; padding: 16px; background: var(--gradient); color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; transition: transform 0.3s ease, box-shadow 0.3s ease; font-family: 'Noto Sans SC', sans-serif; }
-        .submit-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(78, 205, 196, 0.4); }
-        .invitation { display: none; text-align: center; animation: scaleIn 0.5s ease; }
-        .invitation.active { display: block; }
-        @keyframes scaleIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
-        .invitation-icon { font-size: 60px; margin-bottom: 20px; }
-        .invitation-title { font-family: 'Playfair Display', serif; font-size: 24px; color: var(--primary); margin-bottom: 20px; }
-        .invitation-content { font-size: 16px; color: var(--dark); line-height: 1.8; background: var(--light); padding: 24px; border-radius: 16px; margin-bottom: 24px; }
-        .invitation-content strong { color: var(--primary); }
-        .back-btn { padding: 12px 24px; background: transparent; border: 2px solid var(--dark); border-radius: 50px; font-size: 14px; color: var(--dark); cursor: pointer; transition: all 0.3s ease; font-family: 'Noto Sans SC', sans-serif; }
-        .back-btn:hover { background: var(--dark); color: white; }
-        .popup { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0); background: white; padding: 30px; border-radius: 20px; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3); z-index: 100; text-align: center; transition: transform 0.3s ease; }
-        .popup.active { transform: translate(-50%, -50%) scale(1); }
-        .popup-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.5); z-index: 99; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
-        .popup-overlay.active { opacity: 1; pointer-events: auto; }
-        .popup-text { font-size: 18px; color: var(--dark); margin-bottom: 20px; font-weight: 500; }
-        .popup-btn { padding: 12px 24px; background: var(--primary); color: white; border: none; border-radius: 50px; font-size: 14px; cursor: pointer; font-family: 'Noto Sans SC', sans-serif; }
-        .hidden { display: none; }
-        .initial-screen { display: flex; flex-direction: column; align-items: center; }
-        .moving { animation: moveAround 2s infinite linear; }
-        @keyframes moveAround { 0% { transform: translate(0, 0); } 25% { transform: translate(80px, 30px); } 50% { transform: translate(0, 60px); } 75% { transform: translate(-80px, 30px); } 100% { transform: translate(0, 0); } }
+        body {
+            font-family: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            min-height: 100vh;
+            background: var(--light);
+            overflow-x: hidden;
+        }
+
+        /* ── 背景 ── */
+        .scene {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px 16px;
+            background: var(--gradient);
+            position: relative;
+            overflow: hidden;
+        }
+        .scene::before {
+            content: '';
+            position: absolute;
+            width: 600px; height: 600px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255,255,255,0.12) 0%, transparent 70%);
+            top: -200px; right: -150px;
+        }
+        .scene::after {
+            content: '';
+            position: absolute;
+            width: 400px; height: 400px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 70%);
+            bottom: -100px; left: -100px;
+        }
+
+        /* ── 卡片 ── */
+        .card {
+            background: var(--card);
+            border-radius: 28px;
+            box-shadow: 0 25px 80px rgba(0,0,0,0.12), 0 4px 20px rgba(0,0,0,0.06);
+            padding: 48px 36px 40px;
+            max-width: 420px;
+            width: 100%;
+            position: relative;
+            z-index: 1;
+            animation: cardIn 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        @keyframes cardIn {
+            from { opacity: 0; transform: translateY(40px) scale(0.96); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        /* ── 装饰线 ── */
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 36px; right: 36px;
+            height: 4px;
+            border-radius: 0 0 4px 4px;
+            background: var(--gradient);
+        }
+
+        /* ── 顶部小图标 ── */
+        .badge {
+            width: 56px; height: 56px;
+            border-radius: 16px;
+            background: linear-gradient(135deg, #FFF0F0, #F0FFFE);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 26px;
+            box-shadow: 0 4px 12px rgba(78,205,196,0.15);
+        }
+
+        .title {
+            font-family: 'Playfair Display', serif;
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--dark);
+            text-align: center;
+            margin-bottom: 10px;
+            line-height: 1.4;
+        }
+        .subtitle {
+            font-size: 14px;
+            color: #9BA4AE;
+            text-align: center;
+            margin-bottom: 36px;
+            font-weight: 400;
+        }
+
+        /* ── 选择区 ── */
+        .choice-area {
+            position: relative;
+            display: flex;
+            gap: 14px;
+            justify-content: center;
+            margin-bottom: 10px;
+            min-height: 110px;
+            align-items: flex-start;
+        }
+        .choice-btn {
+            flex: 1;
+            max-width: 155px;
+            padding: 16px 0;
+            border: none;
+            border-radius: 16px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            text-align: center;
+            position: relative;
+            transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+            overflow: hidden;
+        }
+        .choice-btn:active { transform: scale(0.95); }
+
+        .btn-yes {
+            background: var(--gradient-btn);
+            color: white;
+            box-shadow: 0 6px 24px rgba(255,107,107,0.35);
+        }
+        .btn-yes:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 32px rgba(255,107,107,0.45);
+        }
+        .btn-yes::after {
+            content: '';
+            position: absolute;
+            top: -50%; left: -50%;
+            width: 200%; height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 60%);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .btn-yes:hover::after { opacity: 1; }
+
+        .btn-no {
+            background: var(--dark);
+            color: rgba(255,255,255,0.85);
+            box-shadow: 0 4px 16px rgba(44,62,80,0.25);
+            transform-origin: center center;
+        }
+        .btn-no:hover {
+            box-shadow: 0 6px 20px rgba(44,62,80,0.35);
+        }
+
+        /* ── "不要" 缩小/消失动画 ── */
+        .btn-no.shrink-1 {
+            transform: scale(0.72) translateX(10px);
+            opacity: 0.75;
+            font-size: 13px;
+            padding: 12px 0;
+        }
+        .btn-no.shrink-2 {
+            transform: scale(0.5) translateX(30px) rotate(3deg);
+            opacity: 0.5;
+            font-size: 11px;
+            padding: 10px 0;
+            border-radius: 12px;
+        }
+        .btn-no.shrink-3 {
+            transform: scale(0.3) translateX(50px) rotate(-5deg);
+            opacity: 0.25;
+            font-size: 10px;
+            padding: 8px 0;
+        }
+        .btn-no.shrink-gone {
+            transform: scale(0) translateX(60px);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        /* ── 表单界面 ── */
+        .screen { display: none; }
+        .screen.active { display: block; animation: fadeSlide 0.45s cubic-bezier(0.22,1,0.36,1); }
+        @keyframes fadeSlide {
+            from { opacity: 0; transform: translateY(16px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .form-top {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 28px;
+        }
+        .arrow-btn {
+            width: 38px; height: 38px;
+            border-radius: 12px;
+            border: 2px solid #E8ECF0;
+            background: transparent;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.25s;
+            color: var(--dark);
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+        .arrow-btn:hover { background: var(--light); border-color: var(--secondary-soft); }
+        .form-heading {
+            font-family: 'Playfair Display', serif;
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .field { margin-bottom: 18px; }
+        .field label {
+            display: block;
+            font-size: 12px;
+            color: #A0A8B4;
+            margin-bottom: 7px;
+            font-weight: 500;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+        }
+        .field input,
+        .field select {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #E8ECF0;
+            border-radius: 14px;
+            font-size: 15px;
+            font-family: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            background: #F8FAFB;
+            color: var(--dark);
+            transition: all 0.25s;
+            appearance: none;
+            -webkit-appearance: none;
+        }
+        .field input:focus,
+        .field select:focus {
+            outline: none;
+            border-color: var(--secondary);
+            background: white;
+            box-shadow: 0 0 0 4px rgba(78,205,196,0.1);
+        }
+        .field input::placeholder { color: #C5CDD6; }
+        .field select {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23A0A8B4' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 16px center;
+            padding-right: 40px;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 16px;
+            background: var(--gradient-btn);
+            color: white;
+            border: none;
+            border-radius: 14px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            margin-top: 6px;
+            box-shadow: 0 6px 24px rgba(255,107,107,0.3);
+            transition: all 0.3s cubic-bezier(0.22,1,0.36,1);
+        }
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 32px rgba(255,107,107,0.4);
+        }
+        .submit-btn:active { transform: scale(0.98); }
+
+        /* ── 邀请函 ── */
+        .invite { text-align: center; }
+        .invite-icon { font-size: 48px; margin-bottom: 14px; }
+        .invite-heading {
+            font-family: 'Playfair Display', serif;
+            font-size: 22px;
+            color: var(--primary);
+            margin-bottom: 18px;
+        }
+        .invite-body {
+            font-size: 15px;
+            color: var(--dark);
+            line-height: 2;
+            background: linear-gradient(135deg, #FFF5F5, #F0FFFE);
+            padding: 24px 20px;
+            border-radius: 16px;
+            margin-bottom: 24px;
+            border: 1px solid rgba(255,107,107,0.1);
+        }
+        .invite-body strong { color: var(--primary); font-weight: 600; }
+        .invite-footer {
+            margin-top: 14px;
+            font-size: 13px;
+            color: #B0B8C4;
+        }
+        .outline-btn {
+            padding: 12px 30px;
+            background: transparent;
+            border: 2px solid #DDE2E8;
+            border-radius: 50px;
+            font-size: 14px;
+            color: var(--dark-soft);
+            cursor: pointer;
+            font-family: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            transition: all 0.25s;
+        }
+        .outline-btn:hover { border-color: var(--dark); color: var(--dark); }
+
+        /* ── 弹窗 ── */
+        .overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.4);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            z-index: 90;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+        .overlay.show { opacity: 1; pointer-events: auto; }
+        .dialog {
+            position: fixed;
+            top: 50%; left: 50%;
+            transform: translate(-50%,-50%) scale(0.85);
+            background: white;
+            padding: 36px 28px 28px;
+            border-radius: 24px;
+            box-shadow: 0 24px 80px rgba(0,0,0,0.25);
+            z-index: 100;
+            text-align: center;
+            transition: transform 0.35s cubic-bezier(0.22,1,0.36,1);
+            max-width: 300px;
+            width: 82%;
+        }
+        .dialog.show { transform: translate(-50%,-50%) scale(1); }
+        .dialog-emoji { font-size: 42px; margin-bottom: 10px; }
+        .dialog-msg {
+            font-size: 16px;
+            color: var(--dark);
+            margin-bottom: 22px;
+            font-weight: 500;
+            line-height: 1.6;
+        }
+        .dialog-ok {
+            padding: 12px 32px;
+            background: var(--dark);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 14px;
+            cursor: pointer;
+            font-family: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            transition: transform 0.2s;
+        }
+        .dialog-ok:active { transform: scale(0.95); }
+
+        .gone { display: none !important; }
+
+        @media (max-width: 480px) {
+            .card { padding: 40px 24px 32px; border-radius: 22px; }
+            .title { font-size: 21px; }
+            .choice-area { min-height: 95px; }
+        }
     </style>
 </head>
 <body>
-    <div class="container">
+    <div class="scene">
         <div class="card">
-            <div id="initialScreen" class="initial-screen">
+            <!-- ── 选择界面 ── -->
+            <div id="screenSelect" class="screen active">
+                <div class="badge">&#128197;</div>
                 <h1 class="title">预约我的空闲时间</h1>
-                <p class="question">你要预约我的空闲时间吗？</p>
-                <div class="buttons">
-                    <button class="btn btn-yes" onclick="showForm()">要</button>
-                    <button id="noBtn" class="btn btn-no" onclick="showPopup()">不要</button>
+                <p class="subtitle">选一个你喜欢的答案吧</p>
+                <div class="choice-area">
+                    <button class="choice-btn btn-yes" onclick="enterForm()">&#10003;&ensp;要</button>
+                    <button id="noBtn" class="choice-btn btn-no" onclick="pokeNo()">&#10005;&ensp;不要</button>
                 </div>
             </div>
-            <div id="formScreen" class="form">
-                <h2 class="title">填写预约信息</h2>
-                <div class="form-group">
+
+            <!-- ── 表单界面 ── -->
+            <div id="screenForm" class="screen">
+                <div class="form-top">
+                    <button class="arrow-btn" onclick="backToSelect()">&#8592;</button>
+                    <h2 class="form-heading">填写预约信息</h2>
+                </div>
+                <div class="field">
                     <label>您的姓名</label>
-                    <input type="text" id="name" placeholder="请输入您的姓名">
+                    <input type="text" id="inputName" placeholder="请输入姓名">
                 </div>
-                <div class="form-group">
+                <div class="field">
                     <label>预约时间</label>
-                    <input type="datetime-local" id="time">
+                    <input type="datetime-local" id="inputTime">
                 </div>
-                <div class="form-group">
+                <div class="field">
                     <label>预约事项</label>
-                    <select id="activity">
+                    <select id="inputActivity">
                         <option value="">请选择事项</option>
-                        <option value="喝咖啡">喝咖啡</option>
-                        <option value="看电影">看电影</option>
-                        <option value="吃饭">吃饭</option>
-                        <option value="逛街">逛街</option>
-                        <option value="运动">运动</option>
-                        <option value="其他">其他</option>
+                        <option value="喝咖啡">☕ 喝咖啡</option>
+                        <option value="看电影">🎬 看电影</option>
+                        <option value="吃饭">🍽 吃饭</option>
+                        <option value="逛街">🛍 逛街</option>
+                        <option value="运动">🏃 运动</option>
+                        <option value="其他">✨ 其他</option>
                     </select>
                 </div>
-                <button class="submit-btn" onclick="generateInvitation()">生成邀请函</button>
+                <button class="submit-btn" onclick="submitForm()">生成邀请函</button>
             </div>
-            <div id="invitationScreen" class="invitation">
-                <div class="invitation-icon">🎉</div>
-                <h2 class="invitation-title">预约成功！</h2>
-                <div class="invitation-content" id="invitationContent"></div>
-                <button class="back-btn" onclick="resetForm()">返回</button>
+
+            <!-- ── 邀请函界面 ── -->
+            <div id="screenInvite" class="screen invite">
+                <div class="invite-icon">&#127881;</div>
+                <h2 class="invite-heading">预约成功！</h2>
+                <div class="invite-body" id="inviteBody"></div>
+                <button class="outline-btn" onclick="resetAll()">返回</button>
             </div>
         </div>
     </div>
-    <div class="popup-overlay" id="popupOverlay" onclick="closePopup()"></div>
-    <div class="popup" id="popup">
-        <p class="popup-text">真的不要吗？再想想吧。</p>
-        <button class="popup-btn" onclick="closePopup()">我知道了</button>
+
+    <!-- 弹窗 -->
+    <div class="overlay" id="overlay" onclick="closeDialog()"></div>
+    <div class="dialog" id="dialog">
+        <div class="dialog-emoji" id="dialogEmoji">&#128584;</div>
+        <p class="dialog-msg" id="dialogMsg">真的不要吗？<br>再想想嘛～</p>
+        <button class="dialog-ok" onclick="closeDialog()">好吧</button>
     </div>
+
     <script>
-        let noClickCount = 0;
-        function showPopup() {
-            document.getElementById('popupOverlay').classList.add('active');
-            document.getElementById('popup').classList.add('active');
-            noClickCount++;
-            if (noClickCount >= 1) {
-                const noBtn = document.getElementById('noBtn');
-                noBtn.classList.add('moving');
-                noBtn.style.pointerEvents = 'none';
-            }
+    var noClicks = 0;
+    var noMessages = [
+        { emoji: '🥺', text: '真的不要吗？<br>再想想嘛～' },
+        { emoji: '😢', text: '确定不要？<br>我会伤心的…' },
+        { emoji: '😭', text: '最后一次！<br>真的不考虑一下？' },
+    ];
+
+    function pokeNo() {
+        noClicks++;
+        var btn = document.getElementById('noBtn');
+
+        // 缩小动画
+        if (noClicks <= 3) {
+            btn.classList.add('shrink-' + noClicks);
         }
-        function closePopup() {
-            document.getElementById('popupOverlay').classList.remove('active');
-            document.getElementById('popup').classList.remove('active');
+        if (noClicks >= 4) {
+            btn.classList.add('shrink-gone');
         }
-        function showForm() {
-            document.getElementById('initialScreen').classList.add('hidden');
-            document.getElementById('formScreen').classList.add('active');
-        }
-        function generateInvitation() {
-            const name = document.getElementById('name').value;
-            const time = document.getElementById('time').value;
-            const activity = document.getElementById('activity').value;
-            if (!name || !time || !activity) { alert('请填写完整信息'); return; }
-            const formattedTime = new Date(time).toLocaleString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' });
-            const content = `<p>亲爱的<strong>${name}</strong>，</p><p>您成功预约了<strong>Jane</strong>的</p><p><strong>${formattedTime}</strong></p><p>一起去<strong>${activity}</strong></p><p style="margin-top: 20px; font-size: 14px; color: #666;">期待与您相见！✨</p>`;
-            document.getElementById('invitationContent').innerHTML = content;
-            document.getElementById('formScreen').classList.remove('active');
-            document.getElementById('invitationScreen').classList.add('active');
-        }
-        function resetForm() {
-            document.getElementById('invitationScreen').classList.remove('active');
-            document.getElementById('initialScreen').classList.remove('hidden');
-            document.getElementById('name').value = '';
-            document.getElementById('time').value = '';
-            document.getElementById('activity').value = '';
-        }
+
+        // 弹窗提示
+        var idx = Math.min(noClicks - 1, noMessages.length - 1);
+        document.getElementById('dialogEmoji').innerHTML = noMessages[idx].emoji;
+        document.getElementById('dialogMsg').innerHTML = noMessages[idx].text;
+        document.getElementById('overlay').classList.add('show');
+        document.getElementById('dialog').classList.add('show');
+    }
+
+    function closeDialog() {
+        document.getElementById('overlay').classList.remove('show');
+        document.getElementById('dialog').classList.remove('show');
+    }
+
+    function enterForm() {
+        document.getElementById('screenSelect').classList.remove('active');
+        document.getElementById('screenForm').classList.add('active');
+    }
+
+    function backToSelect() {
+        document.getElementById('screenForm').classList.remove('active');
+        document.getElementById('screenSelect').classList.add('active');
+    }
+
+    function submitForm() {
+        var n = document.getElementById('inputName').value.trim();
+        var t = document.getElementById('inputTime').value;
+        var a = document.getElementById('inputActivity').value;
+        if (!n || !t || !a) { alert('请填写完整信息'); return; }
+        var fmt = new Date(t).toLocaleString('zh-CN', {
+            year:'numeric', month:'long', day:'numeric',
+            hour:'2-digit', minute:'2-digit'
+        });
+        document.getElementById('inviteBody').innerHTML =
+            '<p>亲爱的<strong>' + n + '</strong>，</p>' +
+            '<p>您成功预约了 <strong>Jane</strong> 的</p>' +
+            '<p><strong>' + fmt + '</strong></p>' +
+            '<p>一起去 <strong>' + a + '</strong></p>' +
+            '<p class="invite-footer">期待与您相见 ✨</p>';
+        document.getElementById('screenForm').classList.remove('active');
+        document.getElementById('screenInvite').classList.add('active');
+    }
+
+    function resetAll() {
+        document.getElementById('screenInvite').classList.remove('active');
+        document.getElementById('screenSelect').classList.add('active');
+        // 重置"不要"按钮
+        var btn = document.getElementById('noBtn');
+        btn.className = 'choice-btn btn-no';
+        noClicks = 0;
+        document.getElementById('inputName').value = '';
+        document.getElementById('inputTime').value = '';
+        document.getElementById('inputActivity').value = '';
+    }
     </script>
 </body>
 </html>
